@@ -1,0 +1,114 @@
+swagger: '2.0'
+info:
+  title: Nodo API
+  description: A fancy API for your next Todo example app!
+  version: "1.0.0"
+host: "-"
+schemes:
+  - http
+  - https
+basePath: "/"
+produces:
+  - application/json
+paths:
+  /todos:
+    get:
+      summary: Receive a list of all todos
+      responses:
+        200:
+          description: OK
+          schema:
+            type: object
+            properties:
+              data:
+                type: object
+                properties:
+                  todos:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Todo'
+    post:
+      summary: Create a new todo
+      consumes:
+        - "application/json"
+      parameters:
+        - name: title
+          in: body
+          required: true
+          description: The title of the newly created todo
+          type: string
+        - name: completed
+          in: body
+          required: true
+          description: The state of completed of the newly created todo is completed
+          type: boolean
+      responses:
+        201:
+          description: Created
+          headers:
+            Location:
+              description: The location were the todo can be requested from
+              type: string
+        400:
+          description: Bad request
+  /todos/{id}:
+    parameters:
+      - name: "id"
+        in: path
+        type: string
+        required: true
+        description: The ID of the todo
+    get:
+      summary: Receive a specific todo
+      responses:
+        200:
+          description: OK
+          schema:
+            #type: array
+            $ref: '#/definitions/Todo'
+        404:
+          description: Not found
+    delete:
+      summary: Delete a todo
+      responses:
+        200:
+          description: OK
+        404:
+          description: Not found
+    put:
+      summary: Update a todo
+      description: Either title or completed must be passed
+      consumes:
+        - "application/json"
+      parameters:
+        - name: title
+          in: body
+          required: false
+          description: The new title of the todo
+          type: string
+        - name: completed
+          in: body
+          required: false
+          description: The new state of completed of the todo
+          type: boolean
+      responses:
+        200:
+          description: OK
+        400:
+          description: Bad request
+        404:
+          description: Not found
+definitions:
+  Todo:
+    type: object
+    properties:
+      id:
+        type: string
+      completed:
+        type: boolean
+      created_at:
+        type: number
+      title:
+        type: string
+      updated_at:
+        type: number
