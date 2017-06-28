@@ -12,6 +12,5 @@ program
 
 var port = program.port || 8080;
 
-if (runServer({ logging: true, port: port })) {
-	console.log('Nodo up and running!\nPort = ' + port + '\nPID = ' + process.pid);
-}
+const server = runServer({ logging: true, port: port });
+console.log(`Nodo up and running!\nPort = ${server.port}\nPID = ${process.pid}\nReset Key = ${server.resetKey}`);

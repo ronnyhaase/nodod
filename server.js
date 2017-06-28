@@ -1,13 +1,14 @@
 const Koa = require('koa');
-const logger = require('koa-logger');
+const cuid = require('cuid');
 const parse = require('koa-bodyparser');
+const logger = require('koa-logger');
 const route = require('koa-route');
 
 const { isBoolean, isNonEmptyString, isString } = require('./util');
 const { addTodo, getTodo, getTodos, deleteTodo, editTodo, resetTodos } = require('./db');
 const { validateTodoCreate, validateTodoUpdate} = require('./validators');
 
-const RESET_KEY = 'cj4fj92x8000072t1owp9ipu4';
+const resetKey = cuid();
 
 async function create(ctx) {
 	const data = ctx.request.body;
@@ -50,7 +51,7 @@ async function remove(ctx, id) {
 }
 
 async function reset(ctx, id) {
-	if (ctx.request.query && ctx.request.query.key === RESET_KEY) {
+	if (ctx.request.query && ctx.request.query.key === resetKey) {
 		resetTodos();
 		ctx.response.status = 200;
 		ctx.response.body = {};
@@ -95,7 +96,9 @@ function runServer(settings = { logging: true, port: 3001 }) {
 	app.use(route.del('/todos/:id', remove));
 	app.use(route.post('/todos/reset', reset));
 
-	return app.listen(settings.port);
+	app.listen(settings.port);
+
+	return { logging: settings.logging, port: settings.port, resetKey }
 }
 
 module.exports = { create, list, read, remove, update, runServer };
